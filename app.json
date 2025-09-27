@@ -1,27 +1,37 @@
 {
   "expo": {
-    "name": "my-supabase-app",
-    "slug": "my-supabase-app",
+    "name": "Ayos Surigao",
+    "slug": "ayos-surigao",
     "version": "1.0.0",
+    "description": "A community reporting app for Surigao City residents to report issues and connect with local government",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/sur-logo4.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/images/sur-logo4.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FF9B00"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs access to camera to take photos for community reports.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select images for community reports."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/sur-logo4.png",
+        "backgroundColor": "#FF9B00"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
