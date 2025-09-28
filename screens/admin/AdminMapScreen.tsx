@@ -13,22 +13,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-// Web-compatible map components
-const MapView = Platform.OS === 'web' 
-  ? ({ children, style, ...props }: any) => {
-      const { View } = require('react-native');
-      return <View style={style} {...props}>{children}</View>;
-    }
-  : require("react-native-maps").default;
-
-const Marker = Platform.OS === 'web'
-  ? ({ children, ...props }: any) => {
-      const { View } = require('react-native');
-      return <View {...props}>{children}</View>;
-    }
-  : require("react-native-maps").Marker;
-
-const Region = Platform.OS === 'web' ? {} : require("react-native-maps").Region;
+import { MapView, Marker, Region } from '../../components/MapComponents';
 import * as Location from "expo-location";
 import { Colors } from "../../constants/Colors";
 import {
