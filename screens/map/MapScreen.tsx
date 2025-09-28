@@ -13,29 +13,22 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-// Conditional import for maps - web-compatible
-let MapView: any;
-let Marker: any;
-let Region: any;
+// Web-compatible map components
+const MapView = Platform.OS === 'web' 
+  ? ({ children, style, ...props }: any) => {
+      const { View } = require('react-native');
+      return <View style={style} {...props}>{children}</View>;
+    }
+  : require("react-native-maps").default;
 
-if (Platform.OS === 'web') {
-  // Web fallback - we'll create a simple list view instead of map
-  MapView = ({ children, style, ...props }: any) => {
-    const { View } = require('react-native');
-    return <View style={style} {...props}>{children}</View>;
-  };
-  Marker = ({ children, ...props }: any) => {
-    const { View } = require('react-native');
-    return <View {...props}>{children}</View>;
-  };
-  Region = {};
-} else {
-  // Native maps
-  const Maps = require("react-native-maps");
-  MapView = Maps.default;
-  Marker = Maps.Marker;
-  Region = Maps.Region;
-}
+const Marker = Platform.OS === 'web'
+  ? ({ children, ...props }: any) => {
+      const { View } = require('react-native');
+      return <View {...props}>{children}</View>;
+    }
+  : require("react-native-maps").Marker;
+
+const Region = Platform.OS === 'web' ? {} : require("react-native-maps").Region;
 import * as Location from "expo-location";
 import { Colors } from "../../constants/Colors";
 import {
