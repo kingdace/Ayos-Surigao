@@ -12,7 +12,6 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { Platform } from "react-native";
 
 // Conditional import for maps - web-compatible
 let MapView: any;
