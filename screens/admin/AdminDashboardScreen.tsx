@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { useAdminAuth } from "../../contexts/AdminAuthContext";
@@ -79,8 +80,47 @@ const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({
       case "low":
         return "#10B981";
       default:
-        return Colors.textSecondary;
+        return "#3B82F6";
     }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "roads_infrastructure":
+        return "🛣️";
+      case "utilities_power":
+        return "⚡";
+      case "water_sanitation":
+        return "💧";
+      case "waste_management":
+        return "🗑️";
+      case "public_safety":
+        return "🚨";
+      case "streetlights":
+        return "💡";
+      case "drainage_flooding":
+        return "🌊";
+      case "public_facilities":
+        return "🏢";
+      case "environmental":
+        return "🌱";
+      default:
+        return "⚠️";
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return "Just now";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 2592000)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return date.toLocaleDateString();
   };
 
   if (loading) {
@@ -101,40 +141,48 @@ const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({
     >
       {/* Welcome Section */}
       <View style={styles.welcomeSection}>
-        <Text style={styles.greeting}>Welcome back,</Text>
-
+        <Text style={styles.greeting}>
+          Welcome back,{" "}
+          <Text style={styles.adminName}>
+            {admin?.first_name} {admin?.last_name}
+          </Text>
+        </Text>
         <Text style={styles.welcomeSubtext}>
           Here's what's happening in your operations center
         </Text>
       </View>
 
-      {/* Quick Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{stats?.total_reports || 0}</Text>
-          <Text style={styles.statLabel}>Total Reports</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: "#F59E0B" }]}>
-            {stats?.pending_reports || 0}
-          </Text>
-          <Text style={styles.statLabel}>Pending</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: "#3B82F6" }]}>
-            {stats?.in_progress_reports || 0}
-          </Text>
-          <Text style={styles.statLabel}>In Progress</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: "#10B981" }]}>
-            {stats?.resolved_reports || 0}
-          </Text>
-          <Text style={styles.statLabel}>Resolved</Text>
+      {/* Stats Section */}
+      <View style={styles.statsSection}>
+        <View style={styles.statsGrid}>
+          <View style={[styles.statCard, styles.primaryStatCard]}>
+            <Text style={styles.statIcon}>📊</Text>
+            <Text style={styles.statNumber}>{stats?.total_reports || 0}</Text>
+            <Text style={styles.statLabel}>Total Reports</Text>
+          </View>
+          <View style={[styles.statCard, styles.warningStatCard]}>
+            <Text style={styles.statIcon}>⏳</Text>
+            <Text style={styles.statNumber}>{stats?.pending_reports || 0}</Text>
+            <Text style={styles.statLabel}>Pending</Text>
+          </View>
+          <View style={[styles.statCard, styles.accentStatCard]}>
+            <Text style={styles.statIcon}>🔄</Text>
+            <Text style={styles.statNumber}>
+              {stats?.in_progress_reports || 0}
+            </Text>
+            <Text style={styles.statLabel}>In Progress</Text>
+          </View>
+          <View style={[styles.statCard, styles.successStatCard]}>
+            <Text style={styles.statIcon}>✅</Text>
+            <Text style={styles.statNumber}>
+              {stats?.resolved_reports || 0}
+            </Text>
+            <Text style={styles.statLabel}>Resolved</Text>
+          </View>
         </View>
       </View>
 
-      {/* Critical Reports Alert */}
+      {/* Critical Reports Alert - No Border */}
       {stats?.critical_reports && stats.critical_reports > 0 && (
         <View style={styles.alertCard}>
           <Text style={styles.alertIcon}>⚠️</Text>
@@ -149,88 +197,89 @@ const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({
       )}
 
       {/* Quick Actions */}
-      <View style={styles.quickActionsContainer}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.quickActionsGrid}>
+      <View style={styles.actionsSection}>
+        <View style={styles.actionsGrid}>
           <TouchableOpacity
-            style={styles.quickActionCard}
+            style={styles.actionCard}
             onPress={onNavigateToReports}
+            activeOpacity={0.8}
           >
-            <Text style={styles.quickActionIcon}>📋</Text>
-            <Text style={styles.quickActionText}>Manage Reports</Text>
+            <View
+              style={[
+                styles.actionIconContainer,
+                { backgroundColor: "#3B82F6" + "20" },
+              ]}
+            >
+              <Text style={styles.actionIcon}>📋</Text>
+            </View>
+            <Text style={styles.actionTitle}>Manage Reports</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.quickActionCard}
+            style={styles.actionCard}
             onPress={onNavigateToMap}
+            activeOpacity={0.8}
           >
-            <Text style={styles.quickActionIcon}>🗺️</Text>
-            <Text style={styles.quickActionText}>View Map</Text>
+            <View
+              style={[
+                styles.actionIconContainer,
+                { backgroundColor: "#10B981" + "20" },
+              ]}
+            >
+              <Text style={styles.actionIcon}>🗺️</Text>
+            </View>
+            <Text style={styles.actionTitle}>View Map</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Recent Reports */}
-      <View style={styles.recentReportsContainer}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Reports</Text>
+      <View style={styles.reportsSection}>
+        <View style={styles.reportsSectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Recent Reports</Text>
+            <Text style={styles.sectionSubtitle}>Latest community issues</Text>
+          </View>
           <TouchableOpacity onPress={onNavigateToReports}>
-            <Text style={styles.viewAllText}>View All</Text>
+            <Text style={styles.seeAllText}>See All →</Text>
           </TouchableOpacity>
         </View>
 
         {stats?.recent_reports && stats.recent_reports.length > 0 ? (
-          <View style={styles.recentReportsList}>
-            {stats.recent_reports.slice(0, 5).map((report) => (
-              <View key={report.id} style={styles.recentReportCard}>
-                <View style={styles.reportHeader}>
-                  <Text style={styles.reportTitle} numberOfLines={1}>
-                    {report.title}
+          stats.recent_reports.slice(0, 5).map((report) => (
+            <TouchableOpacity key={report.id} style={styles.reportCard}>
+              <View style={styles.reportHeader}>
+                <Text style={styles.reportTitle}>{report.title}</Text>
+                <View
+                  style={[
+                    styles.urgencyBadge,
+                    { backgroundColor: getUrgencyColor(report.urgency) },
+                  ]}
+                >
+                  <Text style={styles.urgencyText}>
+                    {report.urgency?.toUpperCase() || "MEDIUM"}
                   </Text>
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      { backgroundColor: getStatusColor(report.status) + "20" },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.statusText,
-                        { color: getStatusColor(report.status) },
-                      ]}
-                    >
-                      {report.status.replace("_", " ").toUpperCase()}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.reportDescription} numberOfLines={2}>
-                  {report.description}
-                </Text>
-                <View style={styles.reportFooter}>
-                  <Text style={styles.reportCategory}>{report.category}</Text>
-                  <View
-                    style={[
-                      styles.urgencyBadge,
-                      {
-                        backgroundColor: getUrgencyColor(report.urgency) + "20",
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.urgencyText,
-                        { color: getUrgencyColor(report.urgency) },
-                      ]}
-                    >
-                      {report.urgency.toUpperCase()}
-                    </Text>
-                  </View>
                 </View>
               </View>
-            ))}
-          </View>
+              <View style={styles.reportMeta}>
+                <Text style={styles.reportCategory}>
+                  {getCategoryIcon(report.category)}{" "}
+                  {report.category?.replace("_", " ").toUpperCase() || "OTHER"}
+                </Text>
+                <Text style={styles.reportLocation}>
+                  📍 {report.barangay_name || "Unknown Location"}
+                </Text>
+                <Text style={styles.reportTime}>
+                  🕒 {formatTimeAgo(report.created_at)}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No recent reports</Text>
+            <Text style={styles.emptyStateText}>No recent reports found</Text>
+            <Text style={styles.emptyStateSubtext}>
+              Reports will appear here as they are submitted
+            </Text>
           </View>
         )}
       </View>
@@ -242,6 +291,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.backgroundLight,
+    paddingTop: 12,
   },
   loadingContainer: {
     flex: 1,
@@ -256,66 +306,92 @@ const styles = StyleSheet.create({
   },
   welcomeSection: {
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
     backgroundColor: Colors.background,
   },
   greeting: {
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.textSecondary,
   },
   adminName: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "700",
     color: Colors.textPrimary,
-    marginTop: 2,
   },
   welcomeSubtext: {
-    fontSize: 14,
+    fontSize: 12,
     color: Colors.textSecondary,
-    marginTop: 4,
+    marginTop: 2,
     opacity: 0.8,
   },
-  statsContainer: {
+  statsSection: {
+    marginBottom: 20,
+  },
+  statsGrid: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
   },
   statCard: {
-    flex: 1,
     backgroundColor: Colors.background,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 12,
+    padding: 12,
     alignItems: "center",
+    width: (Dimensions.get("window").width - 60) / 4,
+    marginBottom: 8,
     shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  primaryStatCard: {
+    borderTopWidth: 3,
+    borderTopColor: Colors.primary,
+  },
+  successStatCard: {
+    borderTopWidth: 3,
+    borderTopColor: Colors.success,
+  },
+  warningStatCard: {
+    borderTopWidth: 3,
+    borderTopColor: Colors.warning,
+  },
+  accentStatCard: {
+    borderTopWidth: 3,
+    borderTopColor: Colors.tertiary,
+  },
+  statIcon: {
+    fontSize: 20,
+    marginBottom: 6,
   },
   statNumber: {
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: 20,
+    fontWeight: "bold",
     color: Colors.textPrimary,
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 10,
     color: Colors.textSecondary,
+    textAlign: "center",
     fontWeight: "500",
   },
   alertCard: {
     flexDirection: "row",
     backgroundColor: "#FEF2F2",
     marginHorizontal: 20,
-    marginBottom: 20,
+    marginVertical: 16,
     padding: 16,
     borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: "#EF4444",
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    marginTop: -16,
   },
   alertIcon: {
     fontSize: 24,
@@ -334,78 +410,84 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#991B1B",
   },
-  quickActionsContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
+  actionsSection: {
+    marginBottom: 24,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: Colors.textPrimary,
-    marginBottom: 16,
-  },
-  quickActionsGrid: {
+  actionsGrid: {
     flexDirection: "row",
-    gap: 12,
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
-  quickActionCard: {
-    flex: 1,
+  actionCard: {
+    width: (Dimensions.get("window").width - 50) / 2,
     backgroundColor: Colors.background,
     borderRadius: 16,
     padding: 20,
+    marginBottom: 12,
     alignItems: "center",
     shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 4,
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
-  quickActionIcon: {
-    fontSize: 32,
-    marginBottom: 8,
+  actionIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
   },
-  quickActionText: {
+  actionIcon: {
+    fontSize: 24,
+  },
+  actionTitle: {
     fontSize: 14,
     fontWeight: "600",
     color: Colors.textPrimary,
     textAlign: "center",
   },
-  recentReportsContainer: {
+  reportsSection: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  sectionHeader: {
+  reportsSectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
   },
-  viewAllText: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: Colors.textPrimary,
+    marginBottom: 4,
+  },
+  sectionSubtitle: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+  },
+  seeAllText: {
     fontSize: 14,
     color: Colors.primary,
     fontWeight: "600",
   },
-  recentReportsList: {
-    gap: 12,
-  },
-  recentReportCard: {
+  reportCard: {
     backgroundColor: Colors.background,
     borderRadius: 16,
     padding: 16,
+    marginBottom: 12,
     shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 4,
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   reportHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 8,
   },
   reportTitle: {
@@ -413,51 +495,63 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.textPrimary,
     flex: 1,
-    marginRight: 8,
+    marginRight: 12,
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+  urgencyBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  statusText: {
-    fontSize: 10,
-    fontWeight: "600",
+  urgencyText: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#FFFFFF",
+    textAlign: "center",
   },
-  reportDescription: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginBottom: 12,
-    lineHeight: 20,
-  },
-  reportFooter: {
+  reportMeta: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 12,
   },
   reportCategory: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.textSecondary,
     fontWeight: "500",
   },
-  urgencyBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+  reportLocation: {
+    fontSize: 14,
+    color: Colors.textSecondary,
   },
-  urgencyText: {
-    fontSize: 10,
-    fontWeight: "600",
+  reportTime: {
+    fontSize: 14,
+    color: Colors.textSecondary,
   },
   emptyState: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 40,
+    backgroundColor: Colors.background,
+    borderRadius: 16,
+    padding: 32,
     alignItems: "center",
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
   },
   emptyStateText: {
     fontSize: 16,
+    fontWeight: "600",
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
     color: Colors.textSecondary,
+    textAlign: "center",
   },
 });
 

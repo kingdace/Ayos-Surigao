@@ -253,6 +253,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 16,
     elevation: 8,
+    marginBottom: 30,
   },
   welcomeText: {
     fontSize: 24,

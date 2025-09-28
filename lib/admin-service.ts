@@ -14,6 +14,7 @@ export interface AdminReport {
   longitude: number;
   is_anonymous: boolean;
   reporter_contact?: string;
+  reporter_name?: string;
   photo_urls?: string[];
   user_id?: string;
   reporter_id?: string;
@@ -201,6 +202,7 @@ class AdminService {
         longitude: report.longitude,
         is_anonymous: report.is_anonymous,
         reporter_contact: report.reporter_contact,
+        reporter_name: report.reporter_name,
         photo_urls: report.photo_urls,
         user_id: report.user_id,
         reporter_id: report.reporter_id,
@@ -277,7 +279,7 @@ class AdminService {
         updated_at: data.updated_at,
         assigned_to: data.report_assignments?.[0]?.assigned_admin?.id,
         assigned_admin: data.report_assignments?.[0]?.assigned_admin,
-        admin_comments: data.admin_comments?.map((comment) => ({
+        admin_comments: data.admin_comments?.map((comment: any) => ({
           id: comment.id,
           comment: comment.comment,
           is_internal: comment.is_internal,
@@ -300,33 +302,65 @@ class AdminService {
     notes?: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
+      console.log(
+        `AdminService: Updating report ${reportId} to status ${status}`
+      );
+
+      // First, check if the report exists
+      const { data: existingReport, error: fetchError } = await supabase
+        .from("reports")
+        .select("id, status, title")
+        .eq("id", reportId)
+        .single();
+
+      if (fetchError) {
+        console.error("Fetch error:", fetchError);
+        throw fetchError;
+      }
+
+      console.log("Existing report:", existingReport);
+
+      // Try to update the report status directly
+      const { data: updateData, error: updateError } = await supabase
         .from("reports")
         .update({
           status,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", reportId);
+        .eq("id", reportId)
+        .select();
 
-      if (error) throw error;
+      if (updateError) {
+        console.error("Update error:", updateError);
+        throw updateError;
+      }
 
-      // Add admin comment if notes provided
+      console.log("Update result:", updateData);
+
+      // Add admin comment if notes provided (using report_comments table instead)
       if (notes) {
         const { error: commentError } = await supabase
-          .from("admin_comments")
+          .from("report_comments")
           .insert({
             report_id: reportId,
+            user_id: null, // Admin comment
             comment: notes,
-            is_internal: false,
+            is_admin_comment: true,
           });
 
-        if (commentError) throw commentError;
+        if (commentError) {
+          console.error("Comment error:", commentError);
+          // Don't throw here, status update was successful
+        }
       }
 
       return { success: true };
     } catch (error) {
       console.error("Error updating report status:", error);
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
@@ -355,7 +389,10 @@ class AdminService {
       return { success: true };
     } catch (error) {
       console.error("Error assigning report:", error);
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
@@ -377,7 +414,10 @@ class AdminService {
       return { success: true };
     } catch (error) {
       console.error("Error adding comment:", error);
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 

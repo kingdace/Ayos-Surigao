@@ -13,6 +13,7 @@ import AdminLoginScreen from "../screens/admin/AdminLoginScreen";
 import AdminDashboardScreen from "../screens/admin/AdminDashboardScreen";
 import AdminMapScreen from "../screens/admin/AdminMapScreen";
 import AdminProfileScreen from "../screens/admin/AdminProfileScreen";
+import AdminReportsListScreen from "../screens/admin/AdminReportsListScreen";
 
 type AdminScreen = "login" | "dashboard" | "reports" | "map" | "profile";
 
@@ -48,7 +49,7 @@ const AdminNavigator: React.FC = () => {
         );
       case "reports":
         return (
-          <AdminReportsPlaceholder
+          <AdminReportsListScreen
             onBack={() => setCurrentScreen("dashboard")}
           />
         );
@@ -74,21 +75,23 @@ const AdminNavigator: React.FC = () => {
 
     return (
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Ayos Surigao</Text>
-          <Text style={styles.headerSubtitle}>Admin Panel Management</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <Text style={styles.adminRole}>
-            {admin.role.replace("_", " ").toUpperCase()}
-          </Text>
-          <TouchableOpacity>
-            <Image
-              source={require("../assets/images/sur-logo.png")}
-              style={styles.profileLogo}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.headerTitle}>Ayos Surigao</Text>
+            <Text style={styles.headerSubtitle}>Admin Panel Management</Text>
+          </View>
+          <View style={styles.headerRight}>
+            <Text style={styles.adminName}>
+              {admin.first_name} {admin.last_name}
+            </Text>
+            <TouchableOpacity style={styles.logoContainer}>
+              <Image
+                source={require("../assets/images/sur-logo.png")}
+                style={styles.profileLogo}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
@@ -241,19 +244,6 @@ const AdminNavigator: React.FC = () => {
   );
 };
 
-// Placeholder component for reports management (not yet implemented)
-const AdminReportsPlaceholder: React.FC<{ onBack: () => void }> = ({
-  onBack,
-}) => (
-  <View style={styles.placeholderContainer}>
-    <Text style={styles.placeholderTitle}>Reports Management</Text>
-    <Text style={styles.placeholderText}>Coming soon...</Text>
-    <TouchableOpacity style={styles.backButton} onPress={onBack}>
-      <Text style={styles.backButtonText}>← Back to Dashboard</Text>
-    </TouchableOpacity>
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -272,17 +262,19 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#FF9B00",
-    paddingTop: 45,
+    paddingTop: Platform.OS === "ios" ? 50 : 45,
     paddingBottom: 12,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     shadowColor: "#FF9B00",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
   headerLeft: {
     flex: 1,
@@ -308,16 +300,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  adminRole: {
-    fontSize: 11,
+  adminName: {
+    fontSize: 14,
     color: Colors.textLight,
     fontWeight: "600",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
-  profileButton: {
+  logoContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -391,23 +382,6 @@ const styles = StyleSheet.create({
   activeNavLabel: {
     color: "#FF9B00", // Use our primary color for active text
     fontWeight: "700",
-  },
-  placeholderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  placeholderTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: Colors.textPrimary,
-    marginBottom: 16,
-  },
-  placeholderText: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    marginBottom: 32,
   },
   backButton: {
     backgroundColor: Colors.primary,
