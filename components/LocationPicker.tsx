@@ -14,14 +14,18 @@ let MapView: any;
 let Marker: any;
 let Region: any;
 
-if (Platform.OS === 'web') {
+if (Platform.OS === "web") {
   // Web fallback - we'll create a simple input form instead of map
   MapView = ({ children, style, ...props }: any) => {
-    const { View } = require('react-native');
-    return <View style={style} {...props}>{children}</View>;
+    const { View } = require("react-native");
+    return (
+      <View style={style} {...props}>
+        {children}
+      </View>
+    );
   };
   Marker = ({ children, ...props }: any) => {
-    const { View } = require('react-native');
+    const { View } = require("react-native");
     return <View {...props}>{children}</View>;
   };
   Region = {};
@@ -65,7 +69,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(
     initialLocation || null
   );
-  const [region, setRegion] = useState<Region>(SURIGAO_BOUNDS);
+  const [region, setRegion] = useState<any>(SURIGAO_BOUNDS);
   const [loading, setLoading] = useState(false);
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
 
@@ -316,7 +320,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       </View>
 
       {/* Map */}
-      {Platform.OS === 'web' ? (
+      {Platform.OS === "web" ? (
         // Web fallback - Manual coordinate input
         <View style={styles.webLocationContainer}>
           <Text style={styles.webLocationTitle}>📍 Select Location</Text>
@@ -328,14 +332,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
               <Text style={styles.webInputLabel}>Latitude:</Text>
               <TextInput
                 style={styles.webCoordinateInput}
-                value={selectedLocation?.latitude?.toString() || ''}
+                value={selectedLocation?.latitude?.toString() || ""}
                 onChangeText={(text) => {
                   const lat = parseFloat(text);
                   if (!isNaN(lat)) {
-                    setSelectedLocation(prev => ({
+                    setSelectedLocation((prev) => ({
                       ...prev,
                       latitude: lat,
-                      longitude: prev?.longitude || 0
+                      longitude: prev?.longitude || 0,
                     }));
                   }
                 }}
@@ -347,14 +351,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
               <Text style={styles.webInputLabel}>Longitude:</Text>
               <TextInput
                 style={styles.webCoordinateInput}
-                value={selectedLocation?.longitude?.toString() || ''}
+                value={selectedLocation?.longitude?.toString() || ""}
                 onChangeText={(text) => {
                   const lng = parseFloat(text);
                   if (!isNaN(lng)) {
-                    setSelectedLocation(prev => ({
+                    setSelectedLocation((prev) => ({
                       ...prev,
                       latitude: prev?.latitude || 0,
-                      longitude: lng
+                      longitude: lng,
                     }));
                   }
                 }}
@@ -367,7 +371,9 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             style={styles.webUseCurrentButton}
             onPress={getCurrentLocation}
           >
-            <Text style={styles.webUseCurrentText}>📍 Use Current Location</Text>
+            <Text style={styles.webUseCurrentText}>
+              📍 Use Current Location
+            </Text>
           </TouchableOpacity>
         </View>
       ) : (
