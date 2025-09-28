@@ -185,6 +185,27 @@ The app covers **40 barangays** in Surigao City:
 
 This project is licensed under the MIT License.
 
+## 🚀 Deployment
+
+### Web Version (Vercel)
+
+The app can be deployed to Vercel for web access. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+**Quick Deploy:**
+
+1. Push code to GitHub
+2. Connect repository to Vercel
+3. Deploy automatically
+
+### Mobile App (APK)
+
+You can download the APK build of the app using the link below.
+_(Please note that this version has only been tested on the **POCO X6 Pro 5G (Android)**, and functionality may vary on other devices.)_
+
+```bash
+https://expo.dev/accounts/kite.bish10/projects/ayos-surigao/builds/f9bb342b-6311-4aae-8c44-c38406aeb3c3
+```
+
 ## 🤝 Contributing
 
 1. Fork the repository
