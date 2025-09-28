@@ -43,6 +43,7 @@ npm install
    ```bash
    cp .env.example .env
    ```
+
 2. **The app is pre-configured with working Supabase credentials:**
 
    ```env
@@ -67,6 +68,7 @@ npm start
 
    - [Android](https://play.google.com/store/apps/details?id=host.exp.exponent)
    - [iOS](https://apps.apple.com/app/expo-go/id982107779)
+
 2. **Connect to the app:**
 
    - Scan the QR code with Expo Go (Android) or Camera app (iOS)
@@ -162,16 +164,19 @@ The app covers **40 barangays** in Surigao City:
    ```bash
    npx expo start --clear
    ```
+
 2. **App connection errors:**
 
    - Verify your `.env` file exists and has the correct credentials
    - Check your internet connection
    - Restart the Expo development server
+
 3. **Image upload issues:**
 
    - Check your internet connection
    - Ensure you have granted camera/photo library permissions
    - Try uploading a smaller image file
+
 4. **Location services not working:**
 
    - Grant location permissions in device settings
@@ -191,13 +196,11 @@ This project is licensed under the MIT License.
 
 ### Web Version (Vercel)
 
-The app can be deployed to Vercel for web access. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+The app is also available as a web deployment via Vercel.
+👉 [Ayos Surigao Web App](https://ayos-surigao-app.vercel.app/)
 
-**Quick Deploy:**
-
-1. Push code to GitHub
-2. Connect repository to Vercel
-3. Deploy automatically
+⚠️ **Note:** For the best experience, it is recommended to run the app on **Expo Go (mobile)**.
+The web version currently lacks certain features (e.g., map functionality) and the UI is not fully optimized for web display.
 
 ### Mobile App (APK)
 
@@ -206,7 +209,6 @@ _(Please note that this version has only been tested on the **POCO X6 Pro 5G (An
 
 ⚠️ **Known Issue:** When accessing the **Map Feature** page, the app may close unexpectedly.
 This is a temporary bug and will be fixed in a future update.
-
 
 ```bash
 https://expo.dev/accounts/kite.bish10/projects/ayos-surigao/builds/932c2d40-93be-4799-9e05-5f7a0c5b51ec
