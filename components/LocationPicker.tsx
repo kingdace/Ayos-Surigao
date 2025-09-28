@@ -9,7 +9,7 @@ import {
   Dimensions,
   TextInput,
 } from "react-native";
-import { MapView, Marker, Region } from './MapComponents';
+import { MapView, Marker, Region } from "./MapComponents";
 import * as Location from "expo-location";
 import { Colors } from "../constants/Colors";
 
