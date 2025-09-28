@@ -209,6 +209,9 @@ The app can be deployed to Vercel for web access. See [DEPLOYMENT.md](./DEPLOYME
 You can download the APK build of the app using the link below.
 _(Please note that this version has only been tested on the **POCO X6 Pro 5G (Android)**, and functionality may vary on other devices.)_
 
+⚠️ **Known Issue:** When accessing the **Map Feature** page, the app may close unexpectedly.
+This is a temporary bug and will be fixed in a future update.
+
 ```bash
 https://expo.dev/accounts/kite.bish10/projects/ayos-surigao/builds/f9bb342b-6311-4aae-8c44-c38406aeb3c3
 ```
