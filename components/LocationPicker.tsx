@@ -7,8 +7,31 @@ import {
   Alert,
   Platform,
   Dimensions,
+  TextInput,
 } from "react-native";
-import MapView, { Marker, Region } from "react-native-maps";
+// Conditional import for maps - web-compatible
+let MapView: any;
+let Marker: any;
+let Region: any;
+
+if (Platform.OS === 'web') {
+  // Web fallback - we'll create a simple input form instead of map
+  MapView = ({ children, style, ...props }: any) => {
+    const { View } = require('react-native');
+    return <View style={style} {...props}>{children}</View>;
+  };
+  Marker = ({ children, ...props }: any) => {
+    const { View } = require('react-native');
+    return <View {...props}>{children}</View>;
+  };
+  Region = {};
+} else {
+  // Native maps
+  const Maps = require("react-native-maps");
+  MapView = Maps.default;
+  Marker = Maps.Marker;
+  Region = Maps.Region;
+}
 import * as Location from "expo-location";
 import { Colors } from "../constants/Colors";
 
@@ -293,29 +316,86 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       </View>
 
       {/* Map */}
-      <MapView
-        style={styles.map}
-        region={region}
-        onRegionChangeComplete={setRegion}
-        onPress={handleMapPress}
-        showsUserLocation={hasLocationPermission}
-        showsMyLocationButton={hasLocationPermission}
-        showsCompass={true}
-        customMapStyle={customMapStyle}
-        mapType="hybrid"
-      >
-        {selectedLocation && (
-          <Marker
-            coordinate={{
-              latitude: selectedLocation.latitude,
-              longitude: selectedLocation.longitude,
-            }}
-            title="Selected Location"
-            description={selectedLocation.address || "Report location"}
-            pinColor={Colors.primary}
-          />
-        )}
-      </MapView>
+      {Platform.OS === 'web' ? (
+        // Web fallback - Manual coordinate input
+        <View style={styles.webLocationContainer}>
+          <Text style={styles.webLocationTitle}>📍 Select Location</Text>
+          <Text style={styles.webLocationSubtitle}>
+            Enter coordinates manually (web version)
+          </Text>
+          <View style={styles.webCoordinateInputs}>
+            <View style={styles.webInputGroup}>
+              <Text style={styles.webInputLabel}>Latitude:</Text>
+              <TextInput
+                style={styles.webCoordinateInput}
+                value={selectedLocation?.latitude?.toString() || ''}
+                onChangeText={(text) => {
+                  const lat = parseFloat(text);
+                  if (!isNaN(lat)) {
+                    setSelectedLocation(prev => ({
+                      ...prev,
+                      latitude: lat,
+                      longitude: prev?.longitude || 0
+                    }));
+                  }
+                }}
+                placeholder="9.7894"
+                keyboardType="numeric"
+              />
+            </View>
+            <View style={styles.webInputGroup}>
+              <Text style={styles.webInputLabel}>Longitude:</Text>
+              <TextInput
+                style={styles.webCoordinateInput}
+                value={selectedLocation?.longitude?.toString() || ''}
+                onChangeText={(text) => {
+                  const lng = parseFloat(text);
+                  if (!isNaN(lng)) {
+                    setSelectedLocation(prev => ({
+                      ...prev,
+                      latitude: prev?.latitude || 0,
+                      longitude: lng
+                    }));
+                  }
+                }}
+                placeholder="125.4947"
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.webUseCurrentButton}
+            onPress={getCurrentLocation}
+          >
+            <Text style={styles.webUseCurrentText}>📍 Use Current Location</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        // Native map view
+        <MapView
+          style={styles.map}
+          region={region}
+          onRegionChangeComplete={setRegion}
+          onPress={handleMapPress}
+          showsUserLocation={hasLocationPermission}
+          showsMyLocationButton={hasLocationPermission}
+          showsCompass={true}
+          customMapStyle={customMapStyle}
+          mapType="hybrid"
+        >
+          {selectedLocation && (
+            <Marker
+              coordinate={{
+                latitude: selectedLocation.latitude,
+                longitude: selectedLocation.longitude,
+              }}
+              title="Selected Location"
+              description={selectedLocation.address || "Report location"}
+              pinColor={Colors.primary}
+            />
+          )}
+        </MapView>
+      )}
 
       {/* Location Info */}
       {selectedLocation && (
@@ -526,6 +606,57 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: Colors.textPrimary,
+  },
+  // Web-specific styles
+  webLocationContainer: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#F8FAFC",
+  },
+  webLocationTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: Colors.textPrimary,
+    marginBottom: 8,
+  },
+  webLocationSubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    marginBottom: 20,
+  },
+  webCoordinateInputs: {
+    gap: 16,
+    marginBottom: 20,
+  },
+  webInputGroup: {
+    gap: 8,
+  },
+  webInputLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.textPrimary,
+  },
+  webCoordinateInput: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: Colors.textPrimary,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  webUseCurrentButton: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  webUseCurrentText: {
+    fontSize: 16,
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
 });
 
