@@ -56,6 +56,29 @@ This guide covers deploying your Ayos Surigao app to Vercel for web access.
 - Vercel will provide a URL like: `https://ayos-surigao-xxx.vercel.app`
 - Your app will be live and accessible worldwide!
 
+### 🔐 Admin Panel Access
+
+To test the Admin Panel functionality:
+
+- **Email:** `admin@ayossurigao.com`
+- **Password:** `Admin123!`
+
+### 🧪 Testing Your Deployed App
+
+1. **Public Features:**
+
+   - Browse reports without login
+   - Create new reports (as guest)
+   - View map with report locations
+   - Sign up for a new account
+
+2. **Admin Features:**
+   - Switch to Admin mode on the main screen
+   - Login with the credentials above
+   - Access dashboard with statistics
+   - Manage reports and assignments
+   - View analytics and performance metrics
+
 ## 📱 Mobile App Deployment (EAS Build)
 
 For native mobile apps, use Expo's EAS service:

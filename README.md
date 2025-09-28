@@ -120,6 +120,13 @@ npm start
 - **Data Analyst** - Reports and analytics
 - **Super Admin** - Full system access
 
+### 🔐 Admin Panel Access
+
+To access the Admin Panel, use these credentials:
+
+- **Email:** `admin@ayossurigao.com`
+- **Password:** `Admin123!`
+
 ## 🗺️ Geographic Coverage
 
 The app covers **40 barangays** in Surigao City:
