@@ -12,7 +12,31 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import MapView, { Marker, Region } from "react-native-maps";
+import { Platform } from "react-native";
+
+// Conditional import for maps - web-compatible
+let MapView: any;
+let Marker: any;
+let Region: any;
+
+if (Platform.OS === 'web') {
+  // Web fallback - we'll create a simple list view instead of map
+  MapView = ({ children, style, ...props }: any) => {
+    const { View } = require('react-native');
+    return <View style={style} {...props}>{children}</View>;
+  };
+  Marker = ({ children, ...props }: any) => {
+    const { View } = require('react-native');
+    return <View {...props}>{children}</View>;
+  };
+  Region = {};
+} else {
+  // Native maps
+  const Maps = require("react-native-maps");
+  MapView = Maps.default;
+  Marker = Maps.Marker;
+  Region = Maps.Region;
+}
 import * as Location from "expo-location";
 import { Colors } from "../../constants/Colors";
 import {
@@ -332,7 +356,52 @@ const MapScreen: React.FC<MapScreenProps> = () => {
             <ActivityIndicator size="large" color={Colors.primary} />
             <Text style={styles.loadingText}>Loading reports...</Text>
           </View>
+        ) : Platform.OS === 'web' ? (
+          // Web fallback - List view instead of map
+          <ScrollView style={styles.webListContainer}>
+            <Text style={styles.webListTitle}>📍 Community Reports ({filteredReports.length})</Text>
+            {filteredReports.map((report) => (
+              <TouchableOpacity
+                key={report.id}
+                style={styles.webReportCard}
+                onPress={() => handleMarkerPress(report)}
+              >
+                <View style={styles.webReportHeader}>
+                  <Text style={styles.webReportIcon}>
+                    {getCategoryIcon(report.category)}
+                  </Text>
+                  <View style={styles.webReportInfo}>
+                    <Text style={styles.webReportTitle}>{report.title}</Text>
+                    <Text style={styles.webReportLocation}>
+                      📍 {report.barangay_name || 'Unknown Location'}
+                    </Text>
+                  </View>
+                  <View style={[
+                    styles.webReportStatus,
+                    { backgroundColor: getMarkerColor(report) }
+                  ]}>
+                    <Text style={styles.webReportStatusText}>
+                      {getStatusIcon(report.status)} {report.status}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={styles.webReportDescription} numberOfLines={2}>
+                  {report.description}
+                </Text>
+                <Text style={styles.webReportCoords}>
+                  📍 {report.latitude?.toFixed(4)}, {report.longitude?.toFixed(4)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            {filteredReports.length === 0 && (
+              <View style={styles.webEmptyState}>
+                <Text style={styles.webEmptyText}>No reports found</Text>
+                <Text style={styles.webEmptySubtext}>Try adjusting your filters</Text>
+              </View>
+            )}
+          </ScrollView>
         ) : (
+          // Native map view
           <MapView
             ref={mapRef}
             style={styles.map}
@@ -560,6 +629,89 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#FFFFFF",
     fontWeight: "600",
+  },
+  // Web-specific styles
+  webListContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  webListTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.textPrimary,
+    marginBottom: 16,
+  },
+  webReportCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  webReportHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  webReportIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  webReportInfo: {
+    flex: 1,
+  },
+  webReportTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.textPrimary,
+    marginBottom: 4,
+  },
+  webReportLocation: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  webReportStatus: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  webReportStatusText: {
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+  webReportDescription: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  webReportCoords: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontFamily: "monospace",
+  },
+  webEmptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  webEmptyText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: Colors.textSecondary,
+    marginBottom: 8,
+  },
+  webEmptySubtext: {
+    fontSize: 14,
+    color: Colors.textSecondary,
   },
 });
 
