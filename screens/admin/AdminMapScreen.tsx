@@ -12,7 +12,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Region } from "react-native-maps";
 import * as Location from "expo-location";
 import { Colors } from "../../constants/Colors";
 import {
@@ -472,7 +472,6 @@ const AdminMapScreen: React.FC<AdminMapScreenProps> = ({ onBack }) => {
       <MapView
         ref={mapRef}
         style={styles.map}
-        provider={PROVIDER_GOOGLE}
         initialRegion={SURIGAO_REGION}
         showsUserLocation={true}
         showsMyLocationButton={false}

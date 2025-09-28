@@ -116,15 +116,13 @@ const AdminLoginScreen: React.FC<AdminLoginScreenProps> = ({
               Contact system administrator for access
             </Text>
 
-            {/* Development Mode Switcher */}
-            {__DEV__ && (
-              <TouchableOpacity
-                style={styles.devModeButton}
-                onPress={switchToPublic}
-              >
-                <Text style={styles.devModeText}>👥 Public App</Text>
-              </TouchableOpacity>
-            )}
+            {/* Public App Navigation */}
+            <TouchableOpacity
+              style={styles.devModeButton}
+              onPress={switchToPublic}
+            >
+              <Text style={styles.devModeText}>👥 Public App</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

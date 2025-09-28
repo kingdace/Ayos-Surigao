@@ -132,17 +132,15 @@ const SimpleSignUpScreen: React.FC<Props> = ({ navigation }) => {
             Join the community and help make Surigao City better
           </Text>
 
-          {/* Development Mode Switcher - Text Link */}
-          {__DEV__ && (
-            <TouchableOpacity
-              style={styles.modeSwitcherText}
-              onPress={switchToAdmin}
-            >
-              <Text style={styles.modeSwitcherTextContent}>
-                Switch to Admin Panel
-              </Text>
-            </TouchableOpacity>
-          )}
+          {/* Admin Panel Navigation - Text Link */}
+          <TouchableOpacity
+            style={styles.modeSwitcherText}
+            onPress={switchToAdmin}
+          >
+            <Text style={styles.modeSwitcherTextContent}>
+              Switch to Admin Panel
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.formContainer}>

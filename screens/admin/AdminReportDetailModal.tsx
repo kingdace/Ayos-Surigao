@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { AdminReport } from "../../lib/admin-service";
+import { useAdminAuth } from "../../contexts/AdminAuthContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -21,6 +22,7 @@ interface AdminReportDetailModalProps {
   report: AdminReport | null;
   onClose: () => void;
   onStatusUpdate: (reportId: string, newStatus: string) => void;
+  onDelete?: (reportId: string) => void;
 }
 
 const AdminReportDetailModal: React.FC<AdminReportDetailModalProps> = ({
@@ -28,9 +30,11 @@ const AdminReportDetailModal: React.FC<AdminReportDetailModalProps> = ({
   report,
   onClose,
   onStatusUpdate,
+  onDelete,
 }) => {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const { admin, isSuperAdmin } = useAdminAuth();
 
   if (!report) return null;
 
@@ -210,6 +214,26 @@ const AdminReportDetailModal: React.FC<AdminReportDetailModalProps> = ({
           onPress: () => {
             onStatusUpdate(report.id, newStatus);
             onClose();
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Report",
+      `Are you sure you want to delete this report?\n\nTitle: "${report.title}"\n\nThis action cannot be undone. The report will be permanently removed from the system.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            if (onDelete) {
+              onDelete(report.id);
+              onClose();
+            }
           },
         },
       ]
@@ -478,6 +502,20 @@ const AdminReportDetailModal: React.FC<AdminReportDetailModalProps> = ({
               </View>
             </View>
           </View>
+
+          {/* SuperAdmin Delete Section - Inside scrollable content */}
+          {isSuperAdmin && onDelete && (
+            <View style={styles.deleteSection}>
+              <TouchableOpacity
+                style={styles.deleteButtonCompact}
+                onPress={handleDelete}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.deleteButtonIcon}>🗑️</Text>
+                <Text style={styles.deleteButtonText}>Delete Report</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </ScrollView>
 
         {/* Admin Actions Footer */}
@@ -1077,6 +1115,42 @@ const styles = StyleSheet.create({
   },
   closedButton: {
     backgroundColor: "#6B7280",
+  },
+  deleteButton: {
+    backgroundColor: "#DC2626",
+    borderWidth: 2,
+    borderColor: "#B91C1C",
+  },
+  deleteSection: {
+    marginTop: 16,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+  deleteButtonCompact: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#DC2626",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#B91C1C",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  deleteButtonIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  deleteButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
   },
   actionButtonIcon: {
     fontSize: 14,

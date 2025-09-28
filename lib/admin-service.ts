@@ -157,6 +157,7 @@ class AdminService {
           )
         `
         )
+        .eq("deleted", false) // Exclude deleted reports
         .order("created_at", { ascending: false });
 
       // Apply filters
@@ -414,6 +415,86 @@ class AdminService {
       return { success: true };
     } catch (error) {
       console.error("Error adding comment:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  // Soft delete a report (SuperAdmin only)
+  async deleteReport(
+    reportId: string,
+    adminId: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      console.log(
+        `AdminService: Soft deleting report ${reportId} by admin ${adminId}`
+      );
+
+      // Call the database function to soft delete the report
+      const { data, error } = await supabase.rpc("soft_delete_report", {
+        report_id: reportId,
+        admin_id: adminId,
+      });
+
+      if (error) {
+        console.error("Database error:", error);
+        throw error;
+      }
+
+      if (!data) {
+        return {
+          success: false,
+          error:
+            "Failed to delete report. You may not have permission or the report may not exist.",
+        };
+      }
+
+      console.log("Report soft deleted successfully");
+      return { success: true };
+    } catch (error) {
+      console.error("Error soft deleting report:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  // Restore a deleted report (SuperAdmin only)
+  async restoreReport(
+    reportId: string,
+    adminId: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      console.log(
+        `AdminService: Restoring report ${reportId} by admin ${adminId}`
+      );
+
+      // Call the database function to restore the report
+      const { data, error } = await supabase.rpc("restore_deleted_report", {
+        report_id: reportId,
+        admin_id: adminId,
+      });
+
+      if (error) {
+        console.error("Database error:", error);
+        throw error;
+      }
+
+      if (!data) {
+        return {
+          success: false,
+          error:
+            "Failed to restore report. You may not have permission or the report may not exist.",
+        };
+      }
+
+      console.log("Report restored successfully");
+      return { success: true };
+    } catch (error) {
+      console.error("Error restoring report:", error);
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),

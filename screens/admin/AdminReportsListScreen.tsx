@@ -224,6 +224,39 @@ const AdminReportsListScreen: React.FC<AdminReportsListScreenProps> = ({
     }
   };
 
+  const handleDeleteReport = async (reportId: string) => {
+    try {
+      console.log(`Deleting report ${reportId}`);
+
+      if (!admin?.id) {
+        Alert.alert("Error", "Admin information not available");
+        return;
+      }
+
+      const { success, error } = await adminService.deleteReport(
+        reportId,
+        admin.id
+      );
+
+      if (success) {
+        Alert.alert("Success", "Report deleted successfully");
+        // Refresh the list to remove deleted report
+        await loadReports();
+      } else {
+        console.error("Delete error:", error);
+        Alert.alert("Error", error || "Failed to delete report");
+      }
+    } catch (error) {
+      console.error("Error deleting report:", error);
+      Alert.alert(
+        "Error",
+        `Failed to delete report: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "pending":
@@ -778,6 +811,7 @@ const AdminReportsListScreen: React.FC<AdminReportsListScreenProps> = ({
         report={selectedReport}
         onClose={handleCloseModal}
         onStatusUpdate={handleStatusUpdate}
+        onDelete={handleDeleteReport}
       />
     </View>
   );

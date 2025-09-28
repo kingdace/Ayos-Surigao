@@ -173,6 +173,7 @@ export class SimpleOperationsService {
       let query = supabase
         .from("reports_with_details")
         .select("*")
+        .eq("deleted", false) // Exclude deleted reports
         .order("created_at", { ascending: false });
 
       if (filters.status) {
@@ -217,6 +218,7 @@ export class SimpleOperationsService {
         .from("reports")
         .select("*")
         .eq("id", id)
+        .eq("deleted", false) // Exclude deleted reports
         .single();
 
       return { data, error };

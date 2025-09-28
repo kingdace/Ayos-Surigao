@@ -92,17 +92,15 @@ const SimpleLoginScreen: React.FC<Props> = ({ navigation }) => {
             A community reporting app for Surigao City residents
           </Text>
 
-          {/* Development Mode Switcher - Text Link */}
-          {__DEV__ && (
-            <TouchableOpacity
-              style={styles.modeSwitcherText}
-              onPress={switchToAdmin}
-            >
-              <Text style={styles.modeSwitcherTextContent}>
-                Switch to Admin Panel
-              </Text>
-            </TouchableOpacity>
-          )}
+          {/* Admin Panel Navigation - Text Link */}
+          <TouchableOpacity
+            style={styles.modeSwitcherText}
+            onPress={switchToAdmin}
+          >
+            <Text style={styles.modeSwitcherTextContent}>
+              Switch to Admin Panel
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.formContainer}>
@@ -170,6 +168,19 @@ const SimpleLoginScreen: React.FC<Props> = ({ navigation }) => {
               <TouchableOpacity onPress={() => navigation.navigate("signup")}>
                 <Text style={styles.linkText}>Sign Up</Text>
               </TouchableOpacity>
+            </View>
+
+            {/* Developer Signature - Inside scrollable content */}
+            <View style={styles.developerSignature}>
+              <Text style={styles.developerText}>
+                Developed by Dy Mark B. Gales
+              </Text>
+              <Text style={styles.developerText}>
+                BSICT Student – Surigao del Norte State University (SNSU)
+              </Text>
+              <Text style={styles.copyrightText}>
+                © 2025. All rights reserved.
+              </Text>
             </View>
           </View>
         </View>
@@ -376,6 +387,23 @@ const styles = StyleSheet.create({
     color: Colors.textLight,
     fontWeight: "600",
     textAlign: "center",
+  },
+  developerSignature: {
+    marginTop: 0,
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingBottom: 0,
+  },
+  developerText: {
+    fontSize: 11,
+    color: "#666666",
+    fontWeight: "500",
+    marginBottom: 2,
+  },
+  copyrightText: {
+    fontSize: 9,
+    color: "#999999",
+    fontWeight: "400",
   },
 });
 
