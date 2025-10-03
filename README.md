@@ -43,7 +43,6 @@ npm install
    ```bash
    cp .env.example .env
    ```
-
 2. **The app is pre-configured with working Supabase credentials:**
 
    ```env
@@ -68,7 +67,6 @@ npx expo start
 
    - [Android](https://play.google.com/store/apps/details?id=host.exp.exponent)
    - [iOS](https://apps.apple.com/app/expo-go/id982107779)
-
 2. **Connect to the app:**
 
    - Scan the QR code with Expo Go (Android) or Camera app (iOS)
@@ -162,19 +160,16 @@ The app covers **42 barangays** in Surigao City:
    ```bash
    npx expo start --clear
    ```
-
 2. **App connection errors:**
 
    - Verify your `.env` file exists and has the correct credentials
    - Check your internet connection
    - Restart the Expo development server
-
 3. **Image upload issues:**
 
    - Check your internet connection
    - Ensure you have granted camera/photo library permissions
    - Try uploading a smaller image file
-
 4. **Location services not working:**
 
    - Grant location permissions in device settings
@@ -207,7 +202,7 @@ _(Please note that this version has only been tested on the **POCO X6 Pro 5G (An
 This is a temporary bug and will be fixed in a future update.
 
 ```bash
-https://expo.dev/accounts/kite.bish10/projects/ayos-surigao/builds/932c2d40-93be-4799-9e05-5f7a0c5b51ec
+https://expo.dev/accounts/kite.bish10/projects/ayos-surigao/builds/84481c5f-dc7e-4723-a148-f2d62aadc0d1
 ```
 
 ## 🤝 Contributing
