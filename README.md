@@ -6,7 +6,7 @@ A community reporting mobile application for Surigao City residents to report is
 
 - **Community Reporting** - Report infrastructure, safety, and environmental issues
 - **Real-time Dashboard** - View community statistics and recent reports
-- **Map Integration** - Visualize reports geographically across 40 barangays
+- **Map Integration** - Visualize reports geographically across 42 barangays
 - **Dual Access Modes** - Public app for residents, Admin panel for operations staff
 - **Anonymous Reporting** - Submit reports without revealing identity
 - **Image Attachments** - Upload photos as evidence
