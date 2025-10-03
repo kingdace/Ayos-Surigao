@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { MapView, Marker, Region } from '../../components/MapComponents';
+import { MapView, Marker, Region } from "../../components/MapComponents";
 import * as Location from "expo-location";
 import { Colors } from "../../constants/Colors";
 import {
@@ -333,10 +333,12 @@ const MapScreen: React.FC<MapScreenProps> = () => {
             <ActivityIndicator size="large" color={Colors.primary} />
             <Text style={styles.loadingText}>Loading reports...</Text>
           </View>
-        ) : Platform.OS === 'web' ? (
+        ) : Platform.OS === "web" ? (
           // Web fallback - List view instead of map
           <ScrollView style={styles.webListContainer}>
-            <Text style={styles.webListTitle}>📍 Community Reports ({filteredReports.length})</Text>
+            <Text style={styles.webListTitle}>
+              📍 Community Reports ({filteredReports.length})
+            </Text>
             {filteredReports.map((report) => (
               <TouchableOpacity
                 key={report.id}
@@ -350,13 +352,15 @@ const MapScreen: React.FC<MapScreenProps> = () => {
                   <View style={styles.webReportInfo}>
                     <Text style={styles.webReportTitle}>{report.title}</Text>
                     <Text style={styles.webReportLocation}>
-                      📍 {report.barangay_name || 'Unknown Location'}
+                      📍 {report.barangay_name || "Unknown Location"}
                     </Text>
                   </View>
-                  <View style={[
-                    styles.webReportStatus,
-                    { backgroundColor: getMarkerColor(report) }
-                  ]}>
+                  <View
+                    style={[
+                      styles.webReportStatus,
+                      { backgroundColor: getMarkerColor(report) },
+                    ]}
+                  >
                     <Text style={styles.webReportStatusText}>
                       {getStatusIcon(report.status)} {report.status}
                     </Text>
@@ -366,14 +370,17 @@ const MapScreen: React.FC<MapScreenProps> = () => {
                   {report.description}
                 </Text>
                 <Text style={styles.webReportCoords}>
-                  📍 {report.latitude?.toFixed(4)}, {report.longitude?.toFixed(4)}
+                  📍 {report.latitude?.toFixed(4)},{" "}
+                  {report.longitude?.toFixed(4)}
                 </Text>
               </TouchableOpacity>
             ))}
             {filteredReports.length === 0 && (
               <View style={styles.webEmptyState}>
                 <Text style={styles.webEmptyText}>No reports found</Text>
-                <Text style={styles.webEmptySubtext}>Try adjusting your filters</Text>
+                <Text style={styles.webEmptySubtext}>
+                  Try adjusting your filters
+                </Text>
               </View>
             )}
           </ScrollView>
@@ -436,9 +443,9 @@ const MapScreen: React.FC<MapScreenProps> = () => {
         </View>
       </View>
 
-      {/* Bottom Info Bar */}
-      <View style={styles.bottomInfo}>
-        <Text style={styles.bottomInfoText}>
+      {/* Floating Report Count */}
+      <View style={styles.reportCountContainer}>
+        <Text style={styles.reportCountText}>
           {filteredReports.length} reports • {reports.length} total
         </Text>
         {getActiveFiltersCount() > 0 && (
@@ -580,27 +587,34 @@ const styles = StyleSheet.create({
   controlButtonText: {
     fontSize: 20,
   },
-  // Bottom Info
-  bottomInfo: {
+  // Floating Report Count
+  reportCountContainer: {
+    position: "absolute",
+    bottom: Platform.OS === "android" ? 110 : 120, // Brought higher
+    left: 16,
+    right: 16,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "#FFFFFF",
-    borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
   },
-  bottomInfoText: {
+  reportCountText: {
     fontSize: 14,
-    color: Colors.textSecondary,
-    fontWeight: "500",
+    color: "#000000", // Changed to black
+    fontWeight: "600",
+    textShadowColor: "rgba(255, 255, 255, 0.8)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   clearFiltersButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: Colors.primary,
-    borderRadius: 6,
+    backgroundColor: "rgba(255, 153, 0, 0.9)",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
   },
   clearFiltersText: {
     fontSize: 12,

@@ -224,8 +224,10 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       }
     } catch (error) {
       console.error("Error reverse geocoding:", error);
+      // Return a more user-friendly fallback when geocoding fails
+      return `Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
     }
-    return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+    return `Location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
   };
 
   const handleMapPress = async (event: any) => {
@@ -247,7 +249,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       setSelectedLocation(newLocation);
     } catch (error) {
       console.error("Error setting location:", error);
-      setSelectedLocation({ latitude, longitude });
+      // Still set the location even if geocoding fails
+      const fallbackAddress = `Location: ${latitude.toFixed(
+        4
+      )}, ${longitude.toFixed(4)}`;
+      setSelectedLocation({ latitude, longitude, address: fallbackAddress });
     } finally {
       setLoading(false);
     }
@@ -377,66 +383,64 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
         </MapView>
       )}
 
-      {/* Location Info */}
+      {/* Floating Location Info */}
       {selectedLocation && (
-        <View style={styles.locationInfo}>
-          <Text style={styles.locationTitle}>📍 Selected Location</Text>
-          <Text style={styles.coordinates}>
+        <View style={styles.floatingLocationInfo}>
+          <Text style={styles.floatingLocationTitle}>Selected Location</Text>
+          <Text style={styles.floatingCoordinates}>
             {selectedLocation.latitude.toFixed(6)},{" "}
             {selectedLocation.longitude.toFixed(6)}
           </Text>
           {selectedLocation.address && (
-            <Text style={styles.address}>{selectedLocation.address}</Text>
+            <Text style={styles.floatingAddress} numberOfLines={2}>
+              {selectedLocation.address}
+            </Text>
           )}
         </View>
       )}
 
-      {/* Instructions */}
-      <View style={styles.instructions}>
-        <Text style={styles.instructionText}>
-          📍 Tap anywhere on the map to select the exact location of the issue
+      {/* Floating Instructions */}
+      <View style={styles.floatingInstructions}>
+        <Text style={styles.floatingInstructionText}>
+          📍 Tap anywhere on the map to select location
         </Text>
-        <Text style={styles.instructionSubtext}>
+        <Text style={styles.floatingInstructionSubtext}>
           {hasLocationPermission
-            ? "Make sure the location is within Surigao City boundaries"
-            : "Location permission denied - tap on the map or use the button to select a location"}
+            ? "Within Surigao City boundaries"
+            : "Location permission denied - tap on map"}
         </Text>
       </View>
 
-      {/* Action Buttons */}
-      <View style={styles.actionButtons}>
+      {/* Floating Action Buttons */}
+      <View style={styles.floatingActionButtons}>
         <TouchableOpacity
           style={[
-            styles.currentLocationButton,
+            styles.floatingCurrentLocationButton,
             loading && styles.buttonDisabled,
           ]}
           onPress={getCurrentLocation}
           disabled={loading}
         >
-          <Text style={styles.currentLocationButtonText}>
-            {loading
-              ? "🔄 Getting Location..."
-              : hasLocationPermission
-              ? "📍 Get My Location"
-              : "🏙️ Center on City"}
+          <Text style={styles.floatingCurrentLocationButtonText}>
+            {loading ? "🔄" : hasLocationPermission ? "📍" : "🏙️"}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[
-            styles.confirmButton,
-            !selectedLocation && styles.confirmButtonDisabled,
+            styles.floatingConfirmButton,
+            !selectedLocation && styles.floatingConfirmButtonDisabled,
           ]}
           onPress={handleConfirmLocation}
           disabled={!selectedLocation}
         >
           <Text
             style={[
-              styles.confirmButtonText,
-              !selectedLocation && styles.confirmButtonTextDisabled,
+              styles.floatingConfirmButtonText,
+              !selectedLocation && styles.floatingConfirmButtonTextDisabled,
             ]}
           >
-            Confirm Location
+            ✓ Confirm
           </Text>
         </TouchableOpacity>
       </View>
@@ -486,83 +490,113 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  locationInfo: {
-    backgroundColor: "#FFFFFF",
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
+  // Floating Location Info
+  floatingLocationInfo: {
+    position: "absolute",
+    top: Platform.OS === "ios" ? 120 : 100,
+    left: 16,
+    right: 16,
+    alignItems: "flex-start",
   },
-  locationTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: Colors.textPrimary,
-    marginBottom: 4,
+  floatingLocationTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    marginBottom: 3,
+    textShadowColor: "rgba(0, 0, 0, 0.8)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
-  coordinates: {
-    fontSize: 14,
-    color: "#6B7280",
+  floatingCoordinates: {
+    fontSize: 11,
+    color: "#FFFFFF",
     fontFamily: Platform.OS === "ios" ? "Courier" : "monospace",
+    marginBottom: 2,
+    textShadowColor: "rgba(0, 0, 0, 0.8)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
-  address: {
-    fontSize: 14,
-    color: Colors.textPrimary,
-    marginTop: 4,
+  floatingAddress: {
+    fontSize: 11,
+    color: "#FFFFFF",
+    lineHeight: 14,
+    textShadowColor: "rgba(0, 0, 0, 0.8)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
-  instructions: {
-    backgroundColor: "#F8FAFC",
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
+  // Floating Instructions
+  floatingInstructions: {
+    position: "absolute",
+    bottom: Platform.OS === "android" ? 90 : 110,
+    left: 16,
+    right: 16,
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    borderRadius: 6,
+    padding: 6,
+    alignItems: "center",
   },
-  instructionText: {
-    fontSize: 14,
-    color: Colors.textPrimary,
+  floatingInstructionText: {
+    fontSize: 11,
+    color: "#FFFFFF",
+    fontWeight: "600",
+    marginBottom: 1,
+  },
+  floatingInstructionSubtext: {
+    fontSize: 9,
+    color: "rgba(255, 255, 255, 0.8)",
     textAlign: "center",
-    marginBottom: 4,
   },
-  instructionSubtext: {
-    fontSize: 12,
-    color: "#6B7280",
-    textAlign: "center",
-  },
-  actionButtons: {
+  // Floating Action Buttons
+  floatingActionButtons: {
+    position: "absolute",
+    bottom: Platform.OS === "android" ? 20 : 30,
+    left: 16,
+    right: 16,
     flexDirection: "row",
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
+    gap: 8,
   },
-  currentLocationButton: {
+  floatingCurrentLocationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.8)",
+  },
+  floatingCurrentLocationButtonText: {
+    fontSize: 18,
+  },
+  floatingConfirmButton: {
     flex: 1,
-    backgroundColor: "#F3F4F6",
-    borderRadius: 12,
-    padding: 14,
-    marginRight: 8,
-    alignItems: "center",
-  },
-  currentLocationButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.textPrimary,
-  },
-  confirmButton: {
-    flex: 2,
     backgroundColor: Colors.primary,
-    borderRadius: 12,
-    padding: 14,
-    marginLeft: 8,
+    borderRadius: 22,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
   },
-  confirmButtonDisabled: {
-    backgroundColor: "#D1D5DB",
+  floatingConfirmButtonDisabled: {
+    backgroundColor: "rgba(107, 114, 128, 0.6)",
   },
-  confirmButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
+  floatingConfirmButtonText: {
+    fontSize: 14,
+    fontWeight: "700",
     color: "#FFFFFF",
   },
-  confirmButtonTextDisabled: {
-    color: "#9CA3AF",
+  floatingConfirmButtonTextDisabled: {
+    color: "rgba(255, 255, 255, 0.6)",
   },
   buttonDisabled: {
     opacity: 0.6,

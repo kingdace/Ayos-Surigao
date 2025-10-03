@@ -227,7 +227,12 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({
           </View>
         </View>
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Hero Section with Title and Status */}
           <View style={styles.heroSection}>
             <View style={styles.titleContainer}>
@@ -516,6 +521,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingBottom: Platform.OS === "android" ? 8 : 0,
+  },
+  scrollContent: {
+    paddingBottom: Platform.OS === "android" ? 20 : 0,
+    flexGrow: 1,
   },
   // Hero Section
   heroSection: {
@@ -579,12 +589,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   categoryCard: {
-    backgroundColor: "#FFF8E1",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   priorityCard: {
-    backgroundColor: "#FFF3C4",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   metaCardHeader: {
     flexDirection: "row",
@@ -613,6 +629,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -653,12 +671,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   locationCard: {
-    backgroundColor: "#F5F5DC",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   reporterCard: {
-    backgroundColor: "#FFF8E1",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   infoCardHeader: {
     flexDirection: "row",
@@ -703,6 +727,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -746,6 +772,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,

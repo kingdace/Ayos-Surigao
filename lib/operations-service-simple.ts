@@ -277,7 +277,8 @@ export class SimpleOperationsService {
     try {
       const { data: reports, error } = await supabase
         .from("reports")
-        .select("status");
+        .select("status")
+        .eq("deleted", false);
 
       if (error || !reports) {
         return {

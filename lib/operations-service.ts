@@ -416,10 +416,11 @@ export class OperationsCenterService {
    */
   async getDashboardStats(): Promise<ApiResponse<DashboardStats>> {
     try {
-      // Get basic counts
+      // Get basic counts (excluding soft-deleted reports)
       const { data: allReports } = await supabase
         .from("reports")
-        .select("status, category, barangay_code, created_at, resolved_at");
+        .select("status, category, barangay_code, created_at, resolved_at")
+        .eq("deleted", false);
 
       if (!allReports) throw new Error("Failed to fetch reports");
 

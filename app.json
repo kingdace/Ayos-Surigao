@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "A community reporting app for Surigao City residents to report issues and connect with local government",
     "orientation": "portrait",
-    "icon": "./assets/images/sur-logo4.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -18,13 +18,16 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs access to camera to take photos for community reports.",
         "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select images for community reports."
+      },
+      "config": {
+        "googleMapsApiKey": "AIzaSyAeqOb-yQINuxD9Mo-s4_X7R8uQkk-Xz9A"
       }
     },
     "android": {
       "package": "com.ayossurigao.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/sur-logo4.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FF9B00"
       },
       "edgeToEdgeEnabled": true,
@@ -35,7 +38,12 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION"
-      ]
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAJpmMNXw6mURlQUrCQOV0_ktcdTG8NhcA"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -43,7 +51,8 @@
     "extra": {
       "eas": {
         "projectId": "f2b1f9c9-4e76-4a84-bb7d-8cbbd5fde257"
-      }
+      },
+      "googleMapsApiKey": "AIzaSyAJpmMNXw6mURlQUrCQOV0_ktcdTG8NhcA"
     }
   }
 }

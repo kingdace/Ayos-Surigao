@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
   Alert,
+  Animated,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { AdminReport } from "../../lib/admin-service";
@@ -34,7 +35,32 @@ const AdminReportDetailModal: React.FC<AdminReportDetailModalProps> = ({
 }) => {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isStatusSectionExpanded, setIsStatusSectionExpanded] = useState(false);
   const { admin, isSuperAdmin } = useAdminAuth();
+
+  // Animation for collapsible section
+  const animatedHeight = useRef(new Animated.Value(0)).current;
+  const animatedOpacity = useRef(new Animated.Value(0)).current;
+
+  // Handle toggle animation
+  const toggleStatusSection = () => {
+    const toValue = isStatusSectionExpanded ? 0 : 1;
+
+    Animated.parallel([
+      Animated.timing(animatedHeight, {
+        toValue,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+      Animated.timing(animatedOpacity, {
+        toValue,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+    ]).start();
+
+    setIsStatusSectionExpanded(!isStatusSectionExpanded);
+  };
 
   if (!report) return null;
 
@@ -287,7 +313,12 @@ const AdminReportDetailModal: React.FC<AdminReportDetailModalProps> = ({
           </View>
         </View>
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Hero Section with Title and Status */}
           <View style={styles.heroSection}>
             <View style={styles.titleContainer}>
@@ -518,58 +549,87 @@ const AdminReportDetailModal: React.FC<AdminReportDetailModalProps> = ({
           )}
         </ScrollView>
 
-        {/* Admin Actions Footer */}
+        {/* Collapsible Admin Actions Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerTitle}>Update Status</Text>
-          <View style={styles.actionButtons}>
-            {/* First Row - Primary Actions */}
-            <View style={styles.actionRow}>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.reviewButton]}
-                onPress={() => handleStatusUpdate("reviewing")}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionButtonIcon}>👀</Text>
-                <Text style={styles.actionButtonText}>Review</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.progressButton]}
-                onPress={() => handleStatusUpdate("in_progress")}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionButtonIcon}>🔄</Text>
-                <Text style={styles.actionButtonText}>In Progress</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.resolvedButton]}
-                onPress={() => handleStatusUpdate("resolved")}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionButtonIcon}>✅</Text>
-                <Text style={styles.actionButtonText}>Resolved</Text>
-              </TouchableOpacity>
+          {/* Toggle Button */}
+          <TouchableOpacity
+            style={styles.toggleButton}
+            onPress={toggleStatusSection}
+            activeOpacity={0.8}
+          >
+            <View style={styles.toggleButtonContent}>
+              <Text style={styles.toggleButtonText}>
+                {isStatusSectionExpanded ? "🔼" : "🔽"} Update Status
+              </Text>
+              <Text style={styles.toggleButtonSubtext}>
+                {isStatusSectionExpanded ? "Tap to collapse" : "Tap to expand"}
+              </Text>
             </View>
+          </TouchableOpacity>
 
-            {/* Second Row - Secondary Actions */}
-            <View style={styles.actionRow}>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.closedButton]}
-                onPress={() => handleStatusUpdate("closed")}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionButtonIcon}>🔒</Text>
-                <Text style={styles.actionButtonText}>Close</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.rejectedButton]}
-                onPress={() => handleStatusUpdate("rejected")}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionButtonIcon}>❌</Text>
-                <Text style={styles.actionButtonText}>Reject</Text>
-              </TouchableOpacity>
+          {/* Collapsible Action Buttons */}
+          <Animated.View
+            style={[
+              styles.actionButtonsContainer,
+              {
+                height: animatedHeight.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 170], // Adjusted height for better positioning
+                }),
+                opacity: animatedOpacity,
+              },
+            ]}
+          >
+            <View style={styles.actionButtons}>
+              {/* First Row - Primary Actions */}
+              <View style={styles.actionRow}>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.reviewButton]}
+                  onPress={() => handleStatusUpdate("reviewing")}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.actionButtonIcon}>👀</Text>
+                  <Text style={styles.actionButtonText}>Review</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.progressButton]}
+                  onPress={() => handleStatusUpdate("in_progress")}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.actionButtonIcon}>🔄</Text>
+                  <Text style={styles.actionButtonText}>In Progress</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.resolvedButton]}
+                  onPress={() => handleStatusUpdate("resolved")}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.actionButtonIcon}>✅</Text>
+                  <Text style={styles.actionButtonText}>Resolved</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Second Row - Secondary Actions */}
+              <View style={styles.actionRow}>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.closedButton]}
+                  onPress={() => handleStatusUpdate("closed")}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.actionButtonIcon}>🔒</Text>
+                  <Text style={styles.actionButtonText}>Close</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.rejectedButton]}
+                  onPress={() => handleStatusUpdate("rejected")}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.actionButtonIcon}>❌</Text>
+                  <Text style={styles.actionButtonText}>Reject</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </Animated.View>
         </View>
       </View>
 
@@ -693,6 +753,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingBottom: Platform.OS === "android" ? 8 : 0,
+  },
+  scrollContent: {
+    paddingBottom: Platform.OS === "android" ? 8 : 0,
+    flexGrow: 1,
   },
   // Hero Section
   heroSection: {
@@ -756,12 +821,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   categoryCard: {
-    backgroundColor: "#FFF8E1",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   priorityCard: {
-    backgroundColor: "#FFF3C4",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   metaCardHeader: {
     flexDirection: "row",
@@ -790,6 +861,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -830,12 +903,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   locationCard: {
-    backgroundColor: "#F5F5DC",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   reporterCard: {
-    backgroundColor: "#FFF8E1",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   infoCardHeader: {
     flexDirection: "row",
@@ -876,10 +955,12 @@ const styles = StyleSheet.create({
   },
   // Assignment Card
   assignmentCard: {
-    backgroundColor: "#E3F2FD",
+    backgroundColor: "#F8FAFC",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -916,6 +997,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -974,6 +1057,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -1017,6 +1102,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -1064,7 +1151,8 @@ const styles = StyleSheet.create({
   // Footer
   footer: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 8,
+    paddingBottom: Platform.OS === "android" ? 8 : 12,
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
     borderTopColor: "#E2E8F0",
@@ -1073,25 +1161,60 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
+    // Ensure footer stays at bottom on Android
+    position: Platform.OS === "android" ? "relative" : "relative",
+    // Move entire footer lower on screen
+    marginBottom: -16,
   },
-  footerTitle: {
-    fontSize: 14,
+  // Toggle Button
+  toggleButton: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  toggleButtonContent: {
+    alignItems: "center",
+  },
+  toggleButtonText: {
+    fontSize: 16,
     fontWeight: "700",
     color: Colors.textPrimary,
-    marginBottom: 8,
-    textAlign: "center",
+    marginBottom: 2,
+  },
+  toggleButtonSubtext: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: "500",
+  },
+  // Action Buttons Container
+  actionButtonsContainer: {
+    marginTop: 8,
+    paddingTop: 8,
+    paddingBottom: 4,
+    borderTopWidth: 1,
+    borderTopColor: "#E2E8F0",
+    overflow: "hidden",
   },
   actionButtons: {
-    gap: 6,
+    gap: Platform.OS === "android" ? 8 : 6,
   },
   actionRow: {
     flexDirection: "row",
-    gap: 6,
+    gap: Platform.OS === "android" ? 8 : 6,
+    marginBottom: Platform.OS === "android" ? 6 : 4,
   },
   actionButton: {
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
+    paddingVertical: Platform.OS === "android" ? 10 : 8,
+    paddingHorizontal: Platform.OS === "android" ? 10 : 6,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
@@ -1099,7 +1222,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 3 : 2,
+    // Better touch targets for Android
+    minHeight: Platform.OS === "android" ? 40 : 36,
   },
   reviewButton: {
     backgroundColor: "#3B82F6",
@@ -1153,14 +1278,16 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   actionButtonIcon: {
-    fontSize: 14,
-    marginBottom: 2,
+    fontSize: Platform.OS === "android" ? 16 : 14,
+    marginBottom: Platform.OS === "android" ? 4 : 2,
   },
   actionButtonText: {
-    fontSize: 11,
+    fontSize: Platform.OS === "android" ? 12 : 11,
     color: "#FFFFFF",
     fontWeight: "700",
     textAlign: "center",
+    // Better text rendering on Android
+    includeFontPadding: Platform.OS === "android" ? false : true,
   },
   // Image Preview Modal Styles
   imagePreviewOverlay: {

@@ -68,10 +68,11 @@ class AdminService {
   // Dashboard Statistics
   async getDashboardStats(): Promise<{ data: AdminStats | null; error: any }> {
     try {
-      // Get basic counts
+      // Get basic counts (excluding soft-deleted reports)
       const { data: totalReports, error: totalError } = await supabase
         .from("reports")
-        .select("id, status, category, urgency, barangay_code, created_at");
+        .select("id, status, category, urgency, barangay_code, created_at")
+        .eq("deleted", false);
 
       if (totalError) throw totalError;
 
@@ -98,7 +99,7 @@ class AdminService {
           (stats.reports_by_barangay[report.barangay_code] || 0) + 1;
       });
 
-      // Get recent reports with details
+      // Get recent reports with details (reports_with_details view already filters deleted reports)
       const { data: recentReports, error: recentError } = await supabase
         .from("reports_with_details")
         .select("*")

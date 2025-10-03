@@ -59,7 +59,7 @@ npm install
 ### 3. Run the Application
 
 ```bash
-npm start
+npx expo start
 ```
 
 ### 4. Test on Device
@@ -101,9 +101,7 @@ npm start
 
 ## 🔧 Available Scripts
 
-- `npm start` - Start Expo development server
-- `npm run android` - Run on Android emulator
-- `npm run ios` - Run on iOS simulator
+- `npx expo start` - Start Expo development server
 - `npm run web` - Run web version
 
 ## 👥 User Roles
@@ -129,10 +127,10 @@ To access the Admin Panel, use these credentials:
 
 ## 🗺️ Geographic Coverage
 
-The app covers **40 barangays** in Surigao City:
+The app covers **42 barangays** in Surigao City:
 
 - 30 Urban barangays
-- 10 Rural barangays
+- 12 Rural barangays
 - GPS boundary validation
 - Location-based reporting
 
@@ -192,9 +190,7 @@ The app covers **40 barangays** in Surigao City:
 
 This project is licensed under the MIT License.
 
-## 🚀 Deployment
-
-### Web Version (Vercel)
+## 🚀 DeploymentWeb Version (Vercel)
 
 The app is also available as a web deployment via Vercel.
 👉 [Ayos Surigao Web App](https://ayos-surigao-app.vercel.app/)
